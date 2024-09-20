@@ -8,8 +8,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 app = Flask(__name__)
 
 # Инициализируем GigaChat
-AUTHORIZATION = 'NjU0YzUyYmQtOWVlNC00ZmQ5LWIyMmQtMjA5Y2Q5ZDQ1OWViOmVmYjBhNWUzLTBhMjAtNDljOC05MTQxLWM4MGE5ODk1NjljMA==' 
-RqUID = 'efb0a5e3-0a20-49c8-9141-c80a989569c0'  # Уникальный идентификатор запроса
+AUTHORIZATION = '' 
+RqUID = ''  # Уникальный идентификатор запроса
  
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат теста</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Результаты теста: {{ test.name }}</h1>
+    <ul>
+        {% for i in range(0, test.questions | length) %}
+        <li>
+            <strong>Вопрос:</strong> {{ test.questions[i] }}<br>
+            <strong>Ваш ответ:</strong> {{ user_answers[i] }}<br>
+            <strong>Правильный ответ:</strong> {{ test.answers[i] }}<br>
+            <strong>Оценка:</strong> {{ scores[i] }} / 100
+        </li>
+        {% endfor %}
+    </ul>
+    <h2>Средняя оценка: {{ average_score }} / 100</h2>
+</body>
+</html>

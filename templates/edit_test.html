@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать тест</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Редактирование теста</h1>
+    <form method="POST">
+        <label for="test_name">Название теста:</label>
+        <input type="text" name="test_name" value="{{ test.name }}" required>
+        
+        <h3>Вопросы и ответы:</h3>
+        <div id="questions">
+            {% for i in range(0, test.questions | length) %}
+            <div class="question">
+                <input type="text" name="questions" value="{{ test.questions[i] }}" placeholder="Вопрос" required>
+                <input type="text" name="answers" value="{{ test.answers[i] }}" placeholder="Ответ" required>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add_question">Добавить вопрос</button>
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <script>
+        document.getElementById('add_question').addEventListener('click', function() {
+            var div = document.createElement('div');
+            div.className = 'question';
+            div.innerHTML = '<input type="text" name="questions" placeholder="Вопрос" required> <input type="text" name="answers" placeholder="Ответ" required>';
+            document.getElementById('questions').appendChild(div);
+        });
+    </script>
+</body>
+</html>

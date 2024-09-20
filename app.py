@@ -1,8 +1,19 @@
 import csv
 import os
+import requests
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from gigachat import GigaChat
 
 app = Flask(__name__)
+
+# Инициализируем GigaChat
+AUTHORIZATION = 'uAUTHORIZATION' 
+RqUID = 'uRqUID'  # Уникальный идентификатор запроса
+ 
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+giga_chat = GigaChat(AUTHORIZATION, RqUID)
 
 # Путь к файлу с тестами (CSV)
 TESTS_FILE = 'tests.csv'
@@ -99,17 +110,17 @@ def take_test(test_id):
         user_answers = request.form.getlist('user_answers')
         correct_answers = test['answers']
 
-        # Сравнение с использованием GigaChat
         scores = []
-        for i in range(len(user_answers)):
-            score = compare_answers(user_answers[i], correct_answers[i])  # Предположим, GigaChat возвращает оценку
+        for question, user_answer, correct_answer in zip(test['questions'], user_answers, correct_answers):
+            # Формируем вопрос для GigaChat
+            question_text = f"Сравните ответ пользователя: '{user_answer}' с правильным ответом: '{correct_answer}' на вопрос: '{question}'. И поставьте оценку от 0 до 100. ТЫ МОЖЕШЬ ОТВЕЧАТЬ ТОЛЬКО ЧИСЛОМ ОЦЕНКИ, КОТОРУЮ ТЫ ПОСТАВИЛ."
+            score = giga_chat.ask_a_question(question_text)
             scores.append(score)
         
-        average_score = sum(scores) / len(scores)
+        average_score = sum(float(score) for score in scores) / len(scores)  # Предполагается, что GigaChat возвращает числовые оценки
         return render_template('test_result.html', test=test, user_answers=user_answers, scores=scores, average_score=average_score)
 
     return render_template('take_test.html', test=test)
 
 if __name__ == '__main__':
     app.run(debug=True)
-

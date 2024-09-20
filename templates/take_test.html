@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Прохождение теста</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Тест: {{ test.name }}</h1>
+    <form method="POST">
+        {% for i in range(0, test.questions | length) %}
+        <div class="question">
+            <label>{{ test.questions[i] }}</label>
+            <input type="text" name="user_answers" placeholder="Ваш ответ" required>
+        </div>
+        {% endfor %}
+        <button type="submit">Завершить тест</button>
+    </form>
+</body>
+</html>

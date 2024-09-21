@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+    <h1>Регистрация</h1>
+    <form method="POST">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" name="username" required><br>
+        <label for="password">Пароль:</label>
+        <input type="password" name="password" required><br>
+        <label for="admin_password">Секретный пароль администратора (необязательно):</label>
+        <input type="password" name="admin_password"><br>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <a href="{{ url_for('logout') }}">Войти</a>
+</body>
+</html>

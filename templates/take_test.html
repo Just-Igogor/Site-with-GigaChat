@@ -2,19 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Прохождение теста</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>{{ test.name }}</title>
 </head>
 <body>
-    <h1>Тест: {{ test.name }}</h1>
+    <h1>{{ test.name }}</h1>
     <form method="POST">
         {% for i in range(0, test.questions | length) %}
-        <div class="question">
-            <label>{{ test.questions[i] }}</label>
+        <div>
+            <p>{{ test.questions[i] }}</p>
             <input type="text" name="user_answers" placeholder="Ваш ответ" required>
         </div>
         {% endfor %}
-        <button type="submit">Завершить тест</button>
+        <button type="submit">Отправить</button>
     </form>
 </body>
 </html>

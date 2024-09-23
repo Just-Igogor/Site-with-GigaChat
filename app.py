@@ -14,7 +14,7 @@ AUTHORIZATION = 'uAUTHORIZATION'
 RqUID = 'uRqUID'
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-giga_chat = GigaChat(AUTHORIZATION, RqUID)
+giga_chat = GigaChat(credentials=AUTHORIZATION, scope=RqUID)
 
 # Путь к файлу с тестами и пользователями (CSV)
 TESTS_FILE = 'tests.csv'

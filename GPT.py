@@ -2,17 +2,17 @@ import json
 import requests
 from flask import Flask
 
-AUTHORIZATION = 'uAUTHORIZATION'
-RqUID = 'uRqUID'
+AUTHORIZATION = 'NjU0YzUyYmQtOWVlNC00ZmQ5LWIyMmQtMjA5Y2Q5ZDQ1OWViOmVmYjBhNWUzLTBhMjAtNDljOC05MTQxLWM4MGE5ODk1NjljMA'
+RqUID = 'efb0a5e3-0a20-49c8-9141-c80a989569c0'
 
 class GigaChat:
-    # Прохождение теста
+    # Инициализация класса GigaChat
     def __init__(self, auth, rq):
         self.auth = auth
         self.rqUID = rq
         self.get_token()
         self.communication = []
-    
+
     # Получение токена
     def get_token(self):
         url = 'https://ngw.devices.sberbank.ru:9443/api/v2/oauth'
@@ -24,21 +24,21 @@ class GigaChat:
         data = {
             'scope': 'GIGACHAT_API_PERS'
         }
-        response = self.get(url, headers, data)
+        response = self._post(url, headers, data)
         self.access_token = json.loads(response.text)["access_token"]
-    
-    # Получение запроса
-    def get(self, url, headers, data, verify=False, json = False):
-        if json:
+
+    # Обёртка для выполнения POST-запросов
+    def _post(self, url, headers, data, verify=False, is_json=False):
+        if is_json:
             return requests.post(url, headers=headers, json=data, verify=verify)
         else:
             return requests.post(url, headers=headers, data=data, verify=verify)
-    
-    # Работа с GPT
+
+    # Метод для взаимодействия с GigaChat
     def ask_a_question(self, question, temperature=0.7):
         url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
         headers = {
-            "Content-Type": "`application/json",
+            "Content-Type": "application/json",  # Исправлено значение заголовка
             "Authorization": f"Bearer {self.access_token}"
         }
         self.communication.append({"role": "user", "content": question})
@@ -47,19 +47,11 @@ class GigaChat:
             "messages": self.communication,
             "temperature": temperature
         }
-        response = self.get(url, headers, data, json = True).json()
+        response = self._post(url, headers, data, is_json=True).json()
         content = response['choices'][0]['message']['content']
         self.communication.append({"role": "assistant", "content": content})
         return content
-    
+
+    # Сброс истории общения
     def reset(self):
         self.communication.clear()
-
-chat = GigaChat(AUTHORIZATION, RqUID)
-
-while True:
-    question = input("Что бы Вы хотели спросить?\n")
-    if question in "Очистить историю":
-        chat.reset()
-        continue
-    print("Ответ: ", chat.ask_a_question(question))

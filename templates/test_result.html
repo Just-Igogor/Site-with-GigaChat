@@ -1,21 +1,25 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Результаты теста</title>
-</head>
-<body>
-    <h1>Результаты теста "{{ test.name }}"</h1>
-    <ul>
-        {% for i in range(0, test.questions | length) %}
-        <li>
-            <p>Вопрос: {{ test.questions[i] }}</p>
-            <p>Ваш ответ: {{ user_answers[i] }}</p>
-            <p>Оценка: {{ scores[i] }}</p>
-        </li>
-        {% endfor %}
-        <p>Средняя оценка: {{ average_score }}</p>
-    </ul>
-    <a href="{{ url_for('index') }}">Вернуться к тестам</a> 
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Результаты теста
+{% endblock %}
+
+{% block body %}
+<main class="main-content-result">
+    <link rel="stylesheet" href="../static/style.css">
+    <div class="gray-box">
+        <h1 class="test-title-result">Результаты теста "{{ test.name }}"</h1>
+        <ul class="results-list">
+            {% for i in range(0, test.questions | length) %}
+            <li class="result-item">
+                <p class="question-text">Вопрос: {{ test.questions[i] }}</p>
+                <p class="answer-text">Ваш ответ: {{ user_answers[i] }}</p>
+                <p class="score-text">Оценка: {{ scores[i] }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="average-score">Средняя оценка: {{ average_score }}</p>
+        <a href="{{ url_for('index') }}" class="back-link">Вернуться к тестам</a>
+    </div>
+</main>
+{% endblock %}

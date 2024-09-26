@@ -1,18 +1,20 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Вход</title>
-</head>
-<body>
-    <h1>Вход</h1>
-    <form method="POST">
-        <label for="username">Имя пользователя:</label>
-        <input type="text" name="username" required><br>
-        <label for="password">Пароль:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Войти</button>
-    </form>
-    <a href="{{ url_for('register') }}">Зарегистрироваться</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Вход
+{% endblock %}
+
+{% block body %}
+<main class="main-content">
+    <div class="gray-box">
+        <h1>Вход</h1>
+        <form method="POST" class="input-form">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" name="username" required><br>
+            <label for="password">Пароль:</label>
+            <input type="password" name="password" required><br>
+            <button class="save-button" type="submit">Войти</button>
+            <a class="reset-button" type="reset" href="{{ url_for('register') }}">Зарегистрироваться</a>
+    </div>
+</main>
+{% endblock %}

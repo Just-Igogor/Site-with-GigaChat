@@ -1,40 +1,49 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Редактировать тест</title>
-</head>
-<body>
-    <h1>Редактирование теста</h1>
-    <form method="POST">
-        <label for="test_name">Название теста:</label>
-        <input type="text" name="test_name" value="{{ test.name }}" required><br>
+{% extends 'base.html' %}
 
-        <div id="questions">
-            {% for i in range(0, test.questions | length) %}
-            <div class="question">
-                <input type="text" name="questions" value="{{ test.questions[i] }}" placeholder="Вопрос" required>
-                <input type="text" name="answers" value="{{ test.answers[i] }}" placeholder="Ответ" required>
-                <button type="button" class="delete_question">Удалить вопрос</button>
+{% block title %}
+Редактировать тест
+{% endblock %}
+
+{% block body %}
+<main class="main-content">
+    <div class="gray-box">
+        <h1>Редактирование теста</h1>
+        <form method="POST" class="input-form">
+            <label for="test_name">Название теста:</label>
+            <input type="text" name="test_name" value="{{ test.name }}" required><br>
+            <div id="questions">
+                {% for i in range(0, test.questions | length) %}
+                <div class="question-block">
+                    <input type="text" name="questions" value="{{ test.questions[i] }}" placeholder="Вопрос" required>
+                    <input type="text" name="answers" value="{{ test.answers[i] }}" placeholder="Ответ" required>
+                    <button type="button" class="button-deleteQuestion">Удалить вопрос</button>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-
-        <button type="button" id="add_question">Добавить вопрос</button><br>
-
-        <button type="submit">Сохранить</button>
-        <button href="{{ url_for('index') }}">Вернуться к тестам</button> 
-    </form>
-
+            <button type="button" class="button-addQuestion" id="add_question">Добавить вопрос</button><br>
+            <button class="button-saveTest" type="submit">Сохранить</button>
+            <div class="button-container">
+                <a class="button-back" href="{{ url_for('index') }}">Вернуться к тестам</a>
+                {% if session['role'] == 'admin' %}
+                <form action="{{ url_for('delete_test', test_id=test.id) }}" method="POST">
+                    <button type="submit" class="button-Delete">Удалить тест</button>
+                </form>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+{% block script %}
     <script>
         document.getElementById('add_question').addEventListener('click', function() {
             const questionsDiv = document.getElementById('questions');
             const newQuestion = document.createElement('div');
-            newQuestion.classList.add('question');
+            newQuestion.classList.add('question-block');
             newQuestion.innerHTML = `
                 <input type="text" name="questions" placeholder="Вопрос" required>
                 <input type="text" name="answers" placeholder="Ответ" required>
-                <button type="button" class="delete_question">Удалить вопрос</button>
+                <button type="button" class="reset-button delete_question">Удалить вопрос</button>
             `;
             questionsDiv.appendChild(newQuestion);
 
@@ -45,9 +54,8 @@
 
         document.querySelectorAll('.delete_question').forEach(function(button) {
             button.addEventListener('click', function() {
-                this.closest('.question').remove();
+                this.closest('.question-block').remove();
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -4,7 +4,7 @@ import requests
 from flask import Flask, render_template, request, redirect, url_for, session
 from functools import wraps
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from gigachat import GigaChat
+from GPT import GigaChat
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -14,7 +14,7 @@ AUTHORIZATION = 'uAUTHORIZATION'
 RqUID = 'uRqUID'
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-giga_chat = GigaChat(credentials=AUTHORIZATION, scope=RqUID)
+giga_chat = GigaChat(auth=AUTHORIZATION, rq=RqUID)
 
 # Путь к файлу с тестами и пользователями (CSV)
 TESTS_FILE = 'tests.csv'
@@ -151,8 +151,8 @@ def delete_test(test_id):
 @app.route('/take_test/<int:test_id>', methods=['GET', 'POST'])
 @login_required
 def take_test(test_id):
-    tests = read_tests()
-    test = next((test for test in tests if test['id'] == test_id), None)
+    tests = read_tests()  # Получаем список всех тестов
+    test = next((test for test in tests if test['id'] == test_id), None)  # Ищем нужный тест
 
     if not test:
         return "Тест не найден", 404
@@ -168,9 +168,10 @@ def take_test(test_id):
             scores.append(score)
 
         average_score = sum(float(score) for score in scores) / len(scores)
-        return render_template('test_result.html', test=test, user_answers=user_answers, scores=scores, average_score=average_score)
+        return render_template('test_result.html', test=test,tests = tests, user_answers=user_answers, scores=scores, average_score=average_score)
 
-    return render_template('take_test.html', test=test)
+    return render_template('take_test.html', test=test, tests=tests)  # Передаём test и tests
+
 
 # Регистрация пользователя
 @app.route('/register', methods=['GET', 'POST'])

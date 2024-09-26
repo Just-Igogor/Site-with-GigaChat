@@ -2,8 +2,8 @@ import json
 import requests
 from flask import Flask
 
-AUTHORIZATION = 'NjU0YzUyYmQtOWVlNC00ZmQ5LWIyMmQtMjA5Y2Q5ZDQ1OWViOmVmYjBhNWUzLTBhMjAtNDljOC05MTQxLWM4MGE5ODk1NjljMA'
-RqUID = 'efb0a5e3-0a20-49c8-9141-c80a989569c0'
+AUTHORIZATION = 'гAUTHORIZATION'
+RqUID = 'гRqUID'
 
 class GigaChat:
     # Инициализация класса GigaChat

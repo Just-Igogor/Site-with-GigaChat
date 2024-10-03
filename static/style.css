@@ -547,3 +547,7 @@ input[name="answers"] {
     font-size: 1.5em;
     font-weight: bold;
 }
+
+.flash-messages.hide {
+    opacity: 0;
+}

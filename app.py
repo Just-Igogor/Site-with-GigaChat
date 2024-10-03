@@ -1,7 +1,7 @@
 import csv
 import os
 import requests
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from functools import wraps
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from GPT import GigaChat
@@ -10,8 +10,8 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
 # Инициализируем GigaChat
-AUTHORIZATION = 'uAUTHORIZATION'
-RqUID = 'uRqUID'
+AUTHORIZATION = 'NjU0YzUyYmQtOWVlNC00ZmQ5LWIyMmQtMjA5Y2Q5ZDQ1OWViOmVmYjBhNWUzLTBhMjAtNDljOC05MTQxLWM4MGE5ODk1NjljMA=='
+RqUID = 'efb0a5e3-0a20-49c8-9141-c80a989569c0'
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 giga_chat = GigaChat(auth=AUTHORIZATION, rq=RqUID)
@@ -19,7 +19,15 @@ giga_chat = GigaChat(auth=AUTHORIZATION, rq=RqUID)
 # Путь к файлу с тестами и пользователями (CSV)
 TESTS_FILE = 'tests.csv'
 USERS_FILE = 'users.csv'
+# Путь к файлу с результатами
+RESULTS_FILE = 'results.csv'
 SECRET_ADMIN_PASSWORD = 'secret123'  # Секретный пароль для роли администратора
+
+# Сохранение результатов теста
+def save_test_result(username, test_name, question, user_answer, score, explanation):
+    with open(RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow([username, test_name, question, user_answer, score, explanation])
 
 # Чтение данных тестов из CSV
 def read_tests():
@@ -155,20 +163,33 @@ def take_test(test_id):
     test = next((test for test in tests if test['id'] == test_id), None)  # Ищем нужный тест
 
     if not test:
-        return "Тест не найден", 404
+        flash("Тест не найден"), 404
+        return render_template('index')
 
     if request.method == 'POST':
         user_answers = request.form.getlist('user_answers')
         correct_answers = test['answers']
-
         scores = []
+        explanations = []
+        
+        # Имя текущего пользователя и название теста
+        username = session['username']
+        test_name = test['name']
+
         for question, user_answer, correct_answer in zip(test['questions'], user_answers, correct_answers):
-            question_text = f"Сравните ответ пользователя: '{user_answer}' с правильным ответом: '{correct_answer}' на вопрос: '{question}'. И поставьте оценку от 0 до 100. ТЫ МОЖЕШЬ ОТВЕЧАТЬ ТОЛЬКО ЧИСЛОМ ОЦЕНКИ, КОТОРУЮ ТЫ ПОСТАВИЛ."
-            score = giga_chat.ask_a_question(question_text)
+            question_text = f"Сравни ответ пользователя: '{user_answer}' с правильным ответом: '{correct_answer}' на вопрос: '{question}'. Поставь оценку от 0 до 100. В первой строке укажи только число оценки. Далее, объясни, почему ты поставил эту оценку."
+            response = giga_chat.ask_a_question(question_text)
+            
+            # Извлекаем оценку и объяснение
+            score, explanation = response.split('\n', 1)
             scores.append(score)
+            explanations.append(explanation)
+
+            # Сохраняем результат для каждого вопроса
+            save_test_result(username, test_name, question, user_answer, score, explanation)
 
         average_score = sum(float(score) for score in scores) / len(scores)
-        return render_template('test_result.html', test=test,tests = tests, user_answers=user_answers, scores=scores, average_score=average_score)
+        return render_template('test_result.html', test=test, user_answers=user_answers, scores=scores, average_score=average_score, explanations=explanations)
 
     return render_template('take_test.html', test=test, tests=tests)  # Передаём test и tests
 
@@ -183,7 +204,8 @@ def register():
 
         users = read_users()
         if any(user['username'] == username for user in users):
-            return "Пользователь с таким именем уже существует"
+            flash("Пользователь с таким именем уже существует")
+            return render_template('register.html')
 
         role = 'admin' if admin_password == SECRET_ADMIN_PASSWORD else 'user'
         users.append({'username': username, 'password': password, 'role': role})
@@ -207,7 +229,8 @@ def login():
             session['role'] = user['role']
             return redirect(url_for('index'))
         else:
-            return "Неверное имя пользователя или пароль"
+            flash("Неверное имя пользователя или пароль")
+            return render_template('login.html')
 
     return render_template('login.html')
 

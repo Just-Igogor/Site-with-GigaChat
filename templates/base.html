@@ -61,7 +61,21 @@
             </nav>
             {% block body %}{% endblock %}
         </div>
+        <script>
+            window.addEventListener('DOMContentLoaded', (event) => {
+                const flashMessages = document.querySelector('.flash-messages');
         
+                if (flashMessages) {
+                    setTimeout(() => {
+                        flashMessages.classList.add('hide');
+        
+                        setTimeout(() => {
+                            flashMessages.style.display = 'none';
+                        }, 1000);  // Ждем окончания анимации (1 секунда)
+                    }, 2000);  // Ждем 5 секунд перед исчезновением
+                }
+            });
+        </script>
     </body>
     {% block script %}{% endblock %}
 </html>
